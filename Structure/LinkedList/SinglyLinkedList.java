@@ -1,5 +1,27 @@
 package Structure.LinkedList;
 
+/*
+    SinglyLinkedList 주요 연산)
+    1. 추가 연산
+      - 단일 추가
+      - 전체 추가
+      - 단일 삽입
+      - 전체 삽입
+      
+    2. 검색 연산
+      - 단일 검색
+      - 전체 검색
+      - 범위 검색
+      
+    3. 삭제 연산
+      - 단일 삭제
+      - 범위 삭제
+      
+    4. 출력 연산
+      - 순회
+      - 범위 출력
+ */
+
 public class SinglyLinkedList extends LinkedListNode {
     private LinkedListNode headNode = null;
     private LinkedListNode tailNode = null;
@@ -80,9 +102,9 @@ public class SinglyLinkedList extends LinkedListNode {
                 current.nextNode = newNodes[j];
                 current = current.nextNode;
             }
-
-            super.length += newDatas.length;
         }
+
+        super.length += newDatas.length;
     }
 
 
@@ -114,7 +136,7 @@ public class SinglyLinkedList extends LinkedListNode {
 
     /** 싱글 링크드 리스트 - 범위검색 연산 */
     public LinkedListNode[] SearchRange(int startIndex, int endIndex) {
-        LinkedListNode[] result = new LinkedListNode[(endIndex - startIndex) + 1];
+        LinkedListNode[] result = new LinkedListNode[(Math.min(endIndex, (super.length - 1)) - startIndex) + 1];
         LinkedListNode current = Search(startIndex);
         int i = 0;
 
@@ -130,33 +152,30 @@ public class SinglyLinkedList extends LinkedListNode {
 
     /** *싱글 링크드 리스트 - 단일삭제 연산 */
     public LinkedListNode Delete(int index) {
-        LinkedListNode removed = null;
+        LinkedListNode deleted = null;
         LinkedListNode current = Search(index - 1);
 
         if(index == 0) {
             headNode = current.nextNode;
 
-            removed = current;
+            deleted = current;
         }
         else {
             LinkedListNode temp = current.nextNode;
             current.nextNode = temp.nextNode;
 
-            removed = temp;
+            deleted = temp;
         }
 
         super.length--;
-        return removed;
+        return deleted;
     }
 
     /** 싱글 링크드 리스트 - 범위삭제 연산 */
     public LinkedListNode[] DeleteRange(int startIndex, int endIndex) {
-        LinkedListNode[] removeds = new LinkedListNode[(endIndex - startIndex) + 1];
+        LinkedListNode[] deleted = SearchRange(startIndex, endIndex);
         LinkedListNode startNode = Search(startIndex - 1);
         LinkedListNode endNode = Search(endIndex - 1);
-        int i = 0;
-
-        removeds = SearchRange(startIndex, endIndex);
 
         if(startIndex == 0) {
             headNode = (endNode != null ? endNode.nextNode : null);
@@ -167,12 +186,13 @@ public class SinglyLinkedList extends LinkedListNode {
             startNode.nextNode = (temp != null ? temp.nextNode : null);
         }
 
-        return removeds;
+        super.length -= deleted.length;
+        return deleted;
     }
 
 
 
-    /** *싱글 링크드 리스트 - 출력 연산 */
+    /** *싱글 링크드 리스트 - 순회 연산 */
     public void Traversal() {
         LinkedListNode current = headNode;
 
@@ -184,11 +204,10 @@ public class SinglyLinkedList extends LinkedListNode {
 
     /** 싱글 링크트 리스트 - 범위출력 연산 */
     public void printRange(LinkedListNode[] nodes) {
-        LinkedListNode current = nodes[0];
+        int i = 0;
 
-        while(current != null) {
-            System.out.print(current.GetData() + " ");
-            current = current.nextNode;
+        while(nodes != null && i < nodes.length) {
+            System.out.print(nodes[i++].GetData() + " ");
         }
     }
 }
