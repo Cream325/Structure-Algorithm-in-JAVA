@@ -99,13 +99,27 @@ public class SinglyLinkedList extends LinkedListNode {
     }
 
     /** 싱글 링크드 리스트 - 전체검색 연산 */
-    public Object[] SearchAll() {
-        int i = 0;
-        Object[] result = new Object[super.length];
+    public LinkedListNode[] SearchAll() {
+        LinkedListNode[] result = new LinkedListNode[super.length];
         LinkedListNode current = headNode;
+        int i = 0;
 
         while(current != null) {
-            result[i++] = current.GetData();
+            result[i++] = current;
+            current = current.nextNode;
+        }
+
+        return result;
+    }
+
+    /** 싱글 링크드 리스트 - 범위검색 연산 */
+    public LinkedListNode[] SearchRange(int startIndex, int endIndex) {
+        LinkedListNode[] result = new LinkedListNode[(endIndex - startIndex) + 1];
+        LinkedListNode current = Search(startIndex);
+        int i = 0;
+
+        while((current != null) && (--endIndex) >= (startIndex - 1)) {
+            result[i++] = current;
             current = current.nextNode;
         }
 
@@ -114,7 +128,7 @@ public class SinglyLinkedList extends LinkedListNode {
 
 
 
-    /** *싱글 링크드 리스트 - 삭제 연산 */
+    /** *싱글 링크드 리스트 - 단일삭제 연산 */
     public LinkedListNode Delete(int index) {
         LinkedListNode removed = null;
         LinkedListNode current = Search(index - 1);
@@ -123,18 +137,37 @@ public class SinglyLinkedList extends LinkedListNode {
             headNode = current.nextNode;
 
             removed = current;
-            current = null;
         }
         else {
             LinkedListNode temp = current.nextNode;
             current.nextNode = temp.nextNode;
 
             removed = temp;
-            temp = null;
         }
 
         super.length--;
         return removed;
+    }
+
+    /** 싱글 링크드 리스트 - 범위삭제 연산 */
+    public LinkedListNode[] DeleteRange(int startIndex, int endIndex) {
+        LinkedListNode[] removeds = new LinkedListNode[(endIndex - startIndex) + 1];
+        LinkedListNode startNode = Search(startIndex - 1);
+        LinkedListNode endNode = Search(endIndex - 1);
+        int i = 0;
+
+        removeds = SearchRange(startIndex, endIndex);
+
+        if(startIndex == 0) {
+            headNode = (endNode != null ? endNode.nextNode : null);
+        }
+        else {
+            LinkedListNode temp;
+            temp = (endNode != null ? endNode.nextNode : null);
+            startNode.nextNode = (temp != null ? temp.nextNode : null);
+        }
+
+        return removeds;
     }
 
 
@@ -142,6 +175,16 @@ public class SinglyLinkedList extends LinkedListNode {
     /** *싱글 링크드 리스트 - 출력 연산 */
     public void Traversal() {
         LinkedListNode current = headNode;
+
+        while(current != null) {
+            System.out.print(current.GetData() + " ");
+            current = current.nextNode;
+        }
+    }
+
+    /** 싱글 링크트 리스트 - 범위출력 연산 */
+    public void printRange(LinkedListNode[] nodes) {
+        LinkedListNode current = nodes[0];
 
         while(current != null) {
             System.out.print(current.GetData() + " ");
