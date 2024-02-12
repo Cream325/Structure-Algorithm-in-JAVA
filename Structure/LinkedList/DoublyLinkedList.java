@@ -27,7 +27,7 @@ public class DoublyLinkedList extends LinkedListNode {
     LinkedListNode tailNode = null;
 
 
-    
+
     /** *더블 링크드 리스트 - 단일추가 연산 */
     public void Append(Object newData) {
         LinkedListNode newNode = new LinkedListNode(newData);
@@ -53,13 +53,12 @@ public class DoublyLinkedList extends LinkedListNode {
             newNodes[i] = new LinkedListNode(newDatas[i]);
         }
 
-        if(headNode == null) {
-            headNode = newNodes[0];
-            tailNode = headNode;
-        }
-
-        if(headNode != null) {
-            for(int j = 0; j < newDatas.length; j++) {
+        for(int j = 0; j < newNodes.length; j++) {
+            if(headNode == null) {
+                headNode = newNodes[0];
+                tailNode = headNode;
+            }
+            else {
                 tailNode.nextNode = newNodes[j];
                 newNodes[j].previousNode = tailNode;
                 tailNode = tailNode.nextNode;
@@ -69,27 +68,44 @@ public class DoublyLinkedList extends LinkedListNode {
         super.length += newDatas.length;
     }
 
+    private void AppendAll(LinkedListNode[] newNodes) {
+        for(int j = 0; j < newNodes.length; j++) {
+            if(headNode == null) {
+                headNode = newNodes[0];
+                tailNode = headNode;
+            }
+            else {
+                tailNode.nextNode = newNodes[j];
+                newNodes[j].previousNode = tailNode;
+                tailNode = tailNode.nextNode;
+            }
+        }
+
+        super.length += newNodes.length;
+    }
+
     /** *더블 링크드 리스트 - 단일삽입 연산 */
     public void Insert(Object newData, int index) {
         LinkedListNode newNode = new LinkedListNode(newData);
-        LinkedListNode current = Search(index - 1);
+        LinkedListNode current = Search(index);
 
-        if(headNode != null) {
+        if(headNode == null || index >= super.length) {
+            Append(newData);
+            return;
+        }
+
+        else {
+            newNode.nextNode = current;
+
             if(index == 0) {
-                newNode.nextNode = current;
                 current.previousNode = newNode;
-
                 headNode = newNode;
             }
             else {
-                newNode.nextNode = current.nextNode;
-                current.nextNode.previousNode = newNode;
-
-                newNode.previousNode = current;
-                current.nextNode = newNode;
+                current.previousNode.nextNode = newNode;
+                newNode.previousNode = current.previousNode;
+                current.previousNode = newNode;
             }
-
-            tailNode = newNode;
         }
 
         super.length++;
@@ -104,18 +120,24 @@ public class DoublyLinkedList extends LinkedListNode {
             newNodes[i] = new LinkedListNode(newDatas[i]);
         }
 
-        if(headNode != null) {
+        if(headNode == null || index >= super.length) {
+            AppendAll(newNodes);
+            return;
+        }
+
+        else {
             for(int j = 0; j < newDatas.length; j++) {
-                newNodes[j].nextNode = current.nextNode;
-                if(current.nextNode != null) {
-                    current.nextNode.previousNode = newNodes[j];
+                newNodes[j].nextNode = current;
+
+                if(index == 0 && headNode != newNodes[0]) {
+                    current.previousNode = newNodes[0];
+                    headNode = newNodes[0];
                 }
-
-                newNodes[j].previousNode = current;
-                current.nextNode = newNodes[j];
-
-                current = current.nextNode;
-                tailNode = current;
+                else {
+                    current.previousNode.nextNode = newNodes[j];
+                    newNodes[j].previousNode = current.previousNode;
+                    current.previousNode = newNodes[j];
+                }
             }
         }
 
@@ -202,6 +224,7 @@ public class DoublyLinkedList extends LinkedListNode {
 
     /** 더블 링크드 리스트 - 범위삭제 연산 */
     public LinkedListNode[] DeleteRange(int startIndex, int endIndex) {
+        endIndex = Math.min(endIndex, (super.length - 1));
         LinkedListNode[] deleted = SearchRange(startIndex, endIndex);
         LinkedListNode startNode = Search(startIndex - 1);
         LinkedListNode endNode = Search(endIndex - 1);
@@ -210,8 +233,7 @@ public class DoublyLinkedList extends LinkedListNode {
             headNode = (endNode != null ? endNode.nextNode : null);
         }
         else {
-            LinkedListNode temp;
-            temp = (endNode != null ? endNode.nextNode : null);
+            LinkedListNode temp = (endNode != null ? endNode.nextNode : null);
             startNode.nextNode = (temp != null ? temp.nextNode : null);
 
             if(temp != null && temp.nextNode != null) {
@@ -235,6 +257,7 @@ public class DoublyLinkedList extends LinkedListNode {
         }
     }
 
+    /** 더블 링크드 리스트 - 범위출력 연산 */
     public void printRange(LinkedListNode[] nodes) {
         int i = 0;
 
