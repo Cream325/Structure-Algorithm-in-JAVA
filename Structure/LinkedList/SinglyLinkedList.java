@@ -52,14 +52,12 @@ public class SinglyLinkedList extends LinkedListNode {
             newNodes[i] = new LinkedListNode(newDatas[i]);
         }
 
-        if(headNode == null) {
-            headNode = newNodes[0];
-        }
-
-        if(headNode != null) {
-            tailNode = headNode;
-
-            for(int j = 0; j < newDatas.length; j++) {
+        for(int j = 0; j < newDatas.length; j++) {
+            if(headNode == null) {
+                headNode = newNodes[0];
+                tailNode = headNode;
+            }
+            else {
                 tailNode.nextNode = newNodes[j];
                 tailNode = tailNode.nextNode;
             }
@@ -68,12 +66,32 @@ public class SinglyLinkedList extends LinkedListNode {
         super.length += newDatas.length;
     }
 
+    private void AppendAll(LinkedListNode[] newNodes) {
+        for(int j = 0; j < newNodes.length; j++) {
+            if(headNode == null) {
+                headNode = newNodes[0];
+                tailNode = headNode;
+            }
+            else {
+                tailNode.nextNode = newNodes[j];
+                tailNode = tailNode.nextNode;
+            }
+        }
+
+        super.length += newNodes.length;
+    }
+
     /** *싱글 링크드 리스트 - 단일삽입 연산 */
     public void Insert(Object newData, int index) {
         LinkedListNode newNode = new LinkedListNode(newData);
         LinkedListNode current = Search(index - 1);
 
-        if(headNode != null) {
+        if(headNode == null || index >= super.length) {
+            Append(newData);
+            return;
+        }
+
+        else {
             if(index == 0) {
                 newNode.nextNode = current;
                 headNode = newNode;
@@ -82,25 +100,39 @@ public class SinglyLinkedList extends LinkedListNode {
                 newNode.nextNode = current.nextNode;
                 current.nextNode = newNode;
             }
-
-            super.length++;
         }
+
+        super.length++;
     }
 
     /** 싱글 링크드 리스트 - 전체삽입 연산 */
     public void InsertAll(Object[] newDatas, int index) {
         LinkedListNode[] newNodes = new LinkedListNode[newDatas.length];
-        LinkedListNode current = Search(index);
+        LinkedListNode current = Search(index - 1);
 
         for(int i = 0; i < newDatas.length; i++) {
             newNodes[i] = new LinkedListNode(newDatas[i]);
         }
 
-        if(headNode != null) {
+        if(headNode == null || index >= super.length) {
+            AppendAll(newNodes);
+            return;
+        }
+
+        else {
             for(int j = 0; j < newDatas.length; j++) {
-                newNodes[j].nextNode = current.nextNode;
-                current.nextNode = newNodes[j];
-                current = current.nextNode;
+                if(index == 0 && headNode != newNodes[0]) {
+                    newNodes[0].nextNode = current;
+                    current = newNodes[0];
+
+                    headNode = newNodes[0];
+                }
+                else {
+                    newNodes[j].nextNode = current.nextNode;
+                    current.nextNode = newNodes[j];
+
+                    current = current.nextNode;
+                }
             }
         }
 
@@ -136,7 +168,8 @@ public class SinglyLinkedList extends LinkedListNode {
 
     /** 싱글 링크드 리스트 - 범위검색 연산 */
     public LinkedListNode[] SearchRange(int startIndex, int endIndex) {
-        LinkedListNode[] result = new LinkedListNode[(Math.min(endIndex, (super.length - 1)) - startIndex) + 1];
+        endIndex = Math.min(endIndex, (super.length - 1));
+        LinkedListNode[] result = new LinkedListNode[(endIndex - startIndex) + 1];
         LinkedListNode current = Search(startIndex);
         int i = 0;
 
@@ -173,6 +206,7 @@ public class SinglyLinkedList extends LinkedListNode {
 
     /** 싱글 링크드 리스트 - 범위삭제 연산 */
     public LinkedListNode[] DeleteRange(int startIndex, int endIndex) {
+        endIndex = Math.min(endIndex, (super.length - 1));
         LinkedListNode[] deleted = SearchRange(startIndex, endIndex);
         LinkedListNode startNode = Search(startIndex - 1);
         LinkedListNode endNode = Search(endIndex - 1);
@@ -181,8 +215,7 @@ public class SinglyLinkedList extends LinkedListNode {
             headNode = (endNode != null ? endNode.nextNode : null);
         }
         else {
-            LinkedListNode temp;
-            temp = (endNode != null ? endNode.nextNode : null);
+            LinkedListNode temp = (endNode != null ? endNode.nextNode : null);
             startNode.nextNode = (temp != null ? temp.nextNode : null);
         }
 
